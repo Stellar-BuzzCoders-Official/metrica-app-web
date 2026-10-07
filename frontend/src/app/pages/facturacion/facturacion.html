@@ -1,0 +1,112 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Facturación Mensual</h1>
+    <p class="subtitle">Calcula y genera facturas basadas en las horas aprobadas (Aplica IGV 18%)</p>
+  </div>
+</div>
+
+<div class="split-layout">
+  <!-- Selector -->
+  <div class="form-card">
+    <h3>Criterios de Facturación</h3>
+    <form [formGroup]="form" (ngSubmit)="verPreview()" class="form-grid">
+      
+      <div class="form-group full-width">
+        <label>Proyecto</label>
+        <select class="select" formControlName="proyecto_id" (change)="fac.clearPreview()">
+          <option [value]="0" disabled>Selecciona un proyecto</option>
+          @for (p of cat.proyectos(); track p.id_proyecto) {
+            <option [value]="p.id_proyecto">{{ p.nombre_proyecto }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Mes</label>
+        <select class="select" formControlName="mes" (change)="fac.clearPreview()">
+          @for (m of meses; track m.value) {
+            <option [value]="m.value">{{ m.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Año</label>
+        <input type="number" class="input" formControlName="anio" (input)="fac.clearPreview()">
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="submit" class="btn primary full-width" [disabled]="form.invalid || fac.loading()">
+          @if (fac.loading()) {
+            <div class="spinner small"></div>
+          } @else {
+            Calcular Previsualización
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Vista Previa -->
+  <div class="preview-card">
+    <h3>Vista Previa</h3>
+    
+    @if (fac.loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
+    } @else if (fac.preview(); as prev) {
+      <div class="invoice-preview">
+        <div class="invoice-header">
+          <div class="col">
+            <span class="label">Proyecto ID</span>
+            <span class="val">{{ form.get('proyecto_id')?.value }}</span>
+          </div>
+          <div class="col text-right">
+            <span class="label">Periodo</span>
+            <span class="val">{{ form.get('mes')?.value }}/{{ form.get('anio')?.value }}</span>
+          </div>
+        </div>
+
+        <div class="invoice-body">
+          <div class="summary-item">
+            <span>Total Horas Aprobadas</span>
+            <strong>{{ prev.total_horas }}h</strong>
+          </div>
+          <div class="summary-item">
+            <span>Subtotal (Sin IGV)</span>
+            <strong>{{ prev.subtotal | currency:'USD' }}</strong>
+          </div>
+          <div class="summary-item igv">
+            <span>IGV (18%)</span>
+            <strong>{{ prev.igv | currency:'USD' }}</strong>
+          </div>
+          <div class="summary-item total">
+            <span>Total a Facturar</span>
+            <strong>{{ prev.monto_total | currency:'USD' }}</strong>
+          </div>
+        </div>
+
+        <div class="invoice-actions">
+          @if (prev.total_horas > 0) {
+            <button class="btn success full-width" (click)="generarFactura()" [disabled]="isGenerando()">
+              @if (isGenerando()) {
+                Generando...
+              } @else {
+                Emitir Factura Oficial
+              }
+            </button>
+          } @else {
+            <div class="alert warning">
+              No hay horas aprobadas para facturar en este periodo.
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="empty-state text-center text-3 py-6">
+        Selecciona proyecto, mes y año para calcular.
+      </div>
+    }
+  </div>
+</div>

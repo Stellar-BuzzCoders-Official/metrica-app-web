@@ -1,0 +1,138 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Asignación de Consultores</h1>
+    <p class="subtitle">Asigna consultores a proyectos y gestiona sus tarifas (con historial de auditoría)</p>
+  </div>
+</div>
+
+<div class="split-layout">
+  <div class="form-card">
+    <h3>Nueva Asignación</h3>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+      
+      <div class="form-group full-width">
+        <label>Consultor</label>
+        <select class="select" formControlName="consultor_id">
+          <option [value]="0" disabled>Selecciona consultor</option>
+          @for (c of cat.consultores(); track c.id_consultor) {
+            <option [value]="c.id_consultor">{{ c.nombres }} {{ c.apellidos }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Proyecto</label>
+        <select class="select" formControlName="proyecto_id">
+          <option [value]="0" disabled>Selecciona proyecto</option>
+          @for (p of cat.proyectos(); track p.id_proyecto) {
+            <option [value]="p.id_proyecto">{{ p.nombre_proyecto }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Rol en Proyecto</label>
+        <select class="select" formControlName="rol_proyecto">
+          <option value="" disabled>Selecciona rol</option>
+          <option value="Desarrollador">Desarrollador</option>
+          <option value="Arquitecto">Arquitecto</option>
+          <option value="Analista QA">Analista QA</option>
+          <option value="DBA">DBA</option>
+          <option value="Project Manager">Project Manager</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tarifa Hora ($)</label>
+        <input type="number" class="input" formControlName="tarifa_hora" min="1">
+      </div>
+
+      <div class="form-group full-width">
+        <label>Fecha Inicio</label>
+        <input type="date" class="input" formControlName="fecha_inicio">
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="submit" class="btn primary full-width" [disabled]="form.invalid || isSubmitting()">
+          Asignar Consultor
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="list-card">
+    <h3>Asignaciones Vigentes</h3>
+    
+    @if (asig.loading()) {
+      <div class="loading-state"><div class="spinner"></div></div>
+    } @else if (asig.asignaciones(); as lista) {
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Consultor</th>
+              <th>Proyecto</th>
+              <th>Rol</th>
+              <th>Tarifa</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of lista; track a.id_asignacion) {
+              <tr>
+                <td>{{ a.nombres }} {{ a.apellidos }}</td>
+                <td>{{ a.nombre_proyecto }}</td>
+                <td>{{ a.nombre_rol }}</td>
+                <td>
+                  <span class="badge" style="background: var(--surface-2)">
+                    {{ a.tarifa_hora_pactada | currency:'USD' }}/h
+                  </span>
+                </td>
+                <td><app-status-badge [status]="a.estado"></app-status-badge></td>
+                <td>
+                  <button class="btn ghost small" (click)="openChangeTarifa(a)">
+                    <app-icon name="edit-2" [size]="14"></app-icon>
+                    Tarifa
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal Cambiar Tarifa (Simulado inline para prototipo) -->
+@if (selectedAsignacion()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Modificar Tarifa</h3>
+        <button class="close-btn" (click)="cancelChangeTarifa()">
+          <app-icon name="x" [size]="20"></app-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-2 mb-4">
+          Cambiar tarifa para <strong>{{ selectedAsignacion().nombres }} {{ selectedAsignacion().apellidos }}</strong> en 
+          <strong>{{ selectedAsignacion().nombre_proyecto }}</strong>. Esto registrará una auditoría automáticamente por el Trigger de DB.
+        </p>
+        <form [formGroup]="tarifaForm" (ngSubmit)="onChangeTarifaSubmit()">
+          <div class="form-group mb-4">
+            <label>Nueva Tarifa por Hora ($)</label>
+            <input type="number" class="input" formControlName="nueva_tarifa" min="1">
+          </div>
+          <div class="flex gap-4">
+            <button type="button" class="btn secondary" style="flex: 1" (click)="cancelChangeTarifa()">Cancelar</button>
+            <button type="submit" class="btn primary" style="flex: 1" [disabled]="tarifaForm.invalid || isChangingTarifa()">
+              @if (isChangingTarifa()) { Guardando... } @else { Actualizar Tarifa }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

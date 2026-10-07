@@ -1,0 +1,16 @@
+<div class="toast-wrapper">
+  @for (msg of toast.items(); track msg.id) {
+    <div class="toast" [class]="msg.tipo">
+      <app-icon [name]="getIcon(msg.tipo)" [size]="20" class="icon"></app-icon>
+      <div class="content">
+        <span class="title">{{ msg.titulo }}</span>
+        @if (msg.detalle) {
+          <span class="detail">{{ msg.detalle }}</span>
+        }
+      </div>
+      <button class="close" (click)="toast.dismiss(msg.id)">
+        <app-icon name="x" [size]="16"></app-icon>
+      </button>
+    </div>
+  }
+</div>

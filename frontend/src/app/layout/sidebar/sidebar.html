@@ -1,0 +1,27 @@
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">
+      <app-icon name="building" [size]="20"></app-icon>
+    </div>
+    <div class="brand-text">
+      <h2>Métrica</h2>
+      <span>Andina S.A.C.</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    @for (item of session.menu(); track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active" class="nav-link">
+        <app-icon [name]="item.icon"></app-icon>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="role-badge">
+    <app-icon name="shield" [size]="14"></app-icon>
+    <span>{{ session.rolInfo().label }}</span>
+  </div>
+</aside>

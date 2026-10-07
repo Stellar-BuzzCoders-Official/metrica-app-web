@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Aprobación de Horas</h1>
+    <p class="subtitle">Revisa y aprueba las horas registradas por tu equipo de consultores</p>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="card-header">
+    <h3>Horas Pendientes</h3>
+  </div>
+
+  @if (ts.loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando registros pendientes...</p>
+    </div>
+  } @else if (ts.pendientes(); as registros) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Consultor</th>
+            <th>Proyecto</th>
+            <th>Fecha</th>
+            <th>Horas</th>
+            <th>Actividad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of registros; track r.id_registro) {
+            <tr>
+              <td>
+                <div class="font-medium text">{{ r.nombres }} {{ r.apellidos }}</div>
+              </td>
+              <td>{{ r.nombre_proyecto }}</td>
+              <td>{{ r.fecha_trabajo | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="badge" style="background: var(--surface-2)">{{ r.horas_laboradas }}h</span>
+              </td>
+              <td>
+                <div class="truncate" style="max-width: 250px;" [title]="r.descripcion_actividad">
+                  {{ r.descripcion_actividad }}
+                </div>
+              </td>
+              <td>
+                <app-status-badge [status]="r.estado_aprobacion"></app-status-badge>
+              </td>
+              <td>
+                <button class="btn success small" (click)="aprobar(r.id_registro)">
+                  Aprobar
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center py-6">
+                <div class="empty-state">
+                  <div class="icon-wrap primary large mb-4 mx-auto" style="width: 64px; height: 64px; border-radius: 50%;">
+                    <!-- app-icon no exportado globalmente pero simulado por css -->
+                    <span style="font-size: 24px">👍</span>
+                  </div>
+                  <h4 class="text" style="font-size: 16px; margin-bottom: 8px;">Todo al día</h4>
+                  <p class="text-3">No hay horas pendientes de aprobación en tus proyectos.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

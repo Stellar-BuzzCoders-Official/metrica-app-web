@@ -1,0 +1,34 @@
+<header class="topbar">
+  <div class="search-box">
+    <app-icon name="search"></app-icon>
+    <input type="text" placeholder="Buscar proyectos, consultores..." class="input unstyled" disabled />
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="db-note">
+    <app-icon name="database" [size]="16"></app-icon>
+    <div>
+      Conectado a PostgreSQL: <code>schema metrica</code>
+    </div>
+  </div>
+
+  <div class="role-selector">
+    <label for="rolSelect" class="dim">Simular vista:</label>
+    <select id="rolSelect" class="select" [ngModel]="session.rol()" (ngModelChange)="cambiarRol($event)">
+      @for (r of roles; track r.id) {
+        <option [value]="r.id">{{ r.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="user">
+    <div class="avatar">
+      {{ session.rolInfo().label.substring(0, 1) }}
+    </div>
+    <div class="user-info">
+      <span class="name">{{ session.rolInfo().label }}</span>
+      <span class="db-role">{{ session.rolInfo().dbRole }}</span>
+    </div>
+  </div>
+</header>

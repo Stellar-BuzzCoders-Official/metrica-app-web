@@ -1,0 +1,65 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Catálogos Maestros</h1>
+    <p class="subtitle">Visualización de datos de referencia (Solo lectura en prototipo)</p>
+  </div>
+</div>
+
+<div class="catalog-grid">
+  <!-- Consultores -->
+  <div class="catalog-card">
+    <div class="card-header">
+      <h3>Consultores</h3>
+      <span class="count">{{ cat.consultores()?.length || 0 }}</span>
+    </div>
+    <div class="list">
+      @for (c of cat.consultores(); track c.id_consultor) {
+        <div class="list-item">
+          <div class="avatar">{{ c.nombres.charAt(0) }}</div>
+          <div class="info">
+            <span class="name">{{ c.nombres }} {{ c.apellidos }}</span>
+            <span class="meta">Consultor</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Clientes -->
+  <div class="catalog-card">
+    <div class="card-header">
+      <h3>Clientes</h3>
+      <span class="count">{{ cat.clientes()?.length || 0 }}</span>
+    </div>
+    <div class="list">
+      @for (c of cat.clientes(); track c.id_cliente) {
+        <div class="list-item">
+          <div class="avatar blue">{{ c.razon_social.charAt(0) }}</div>
+          <div class="info">
+            <span class="name">{{ c.razon_social }}</span>
+            <span class="meta">RUC: {{ c.ruc }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Proyectos -->
+  <div class="catalog-card">
+    <div class="card-header">
+      <h3>Proyectos</h3>
+      <span class="count">{{ cat.proyectos()?.length || 0 }}</span>
+    </div>
+    <div class="list">
+      @for (p of cat.proyectos(); track p.id_proyecto) {
+        <div class="list-item">
+          <div class="avatar green">{{ p.nombre_proyecto.charAt(0) }}</div>
+          <div class="info">
+            <span class="name">{{ p.nombre_proyecto }}</span>
+            <span class="meta">Estado: {{ p.estado }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

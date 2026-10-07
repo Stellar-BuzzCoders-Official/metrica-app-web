@@ -1,0 +1,57 @@
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.chart-card {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.chart-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 24px;
+  color: var(--text);
+}
+
+.chart-content {
+  height: 250px;
+}
+
+.progress-bar {
+  width: 100px;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.progress {
+  height: 100%;
+  background: var(--success);
+  border-radius: 3px;
+}
+
+.progress.over {
+  background: var(--danger);
+}
+
+.progress-text {
+  font-size: 12px;
+  color: var(--text-2);
+  vertical-align: middle;
+}

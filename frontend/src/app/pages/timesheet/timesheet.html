@@ -1,0 +1,97 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Registro de Horas</h1>
+    <p class="subtitle">Ingresa las horas trabajadas en tus proyectos asignados</p>
+  </div>
+</div>
+
+<div class="split-layout">
+  <!-- Formulario de Registro -->
+  <div class="form-card">
+    <h3>Nuevo Registro</h3>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+      
+      <div class="form-group">
+        <label>Proyecto</label>
+        <select class="select" formControlName="proyecto_id">
+          <option [value]="0" disabled>Selecciona un proyecto</option>
+          @for (p of cat.proyectos(); track p.id_proyecto) {
+            <option [value]="p.id_proyecto">{{ p.nombre_proyecto }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" class="input" formControlName="fecha_registro">
+      </div>
+
+      <div class="form-group">
+        <label>Horas Trabajadas</label>
+        <input type="number" class="input" formControlName="horas_trabajadas" min="0.5" max="24" step="0.5">
+      </div>
+
+      <div class="form-group full-width">
+        <label>Descripción de Actividad</label>
+        <textarea class="textarea" formControlName="descripcion_actividad" rows="3" placeholder="¿Qué tareas realizaste?"></textarea>
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="submit" class="btn primary full-width" [disabled]="form.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <div class="spinner small"></div>
+          } @else {
+            <app-icon name="check" [size]="16"></app-icon>
+            Registrar Horas
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Historial de Horas -->
+  <div class="history-card">
+    <h3>Mis Horas Registradas (Últimos 30 días)</h3>
+    
+    @if (ts.loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
+    } @else if (ts.misHoras(); as horas) {
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Proyecto</th>
+              <th>Horas</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of horas; track h.id_registro) {
+              <tr>
+                <td>{{ h.fecha_trabajo | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <div class="truncate" style="max-width: 150px;" [title]="h.nombre_proyecto">
+                    {{ h.nombre_proyecto }}
+                  </div>
+                </td>
+                <td>{{ h.horas_laboradas }}</td>
+                <td>
+                  <app-status-badge [status]="h.estado_aprobacion"></app-status-badge>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center py-4 text-3">
+                  No hay registros en los últimos 30 días.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,40 @@
+services:
+  # Base de Datos PostgreSQL
+  - type: psql
+    name: metrica-db
+    plan: free
+
+  # Backend (FastAPI)
+  - type: web
+    name: metrica-backend
+    env: python
+    region: ohio
+    plan: free
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: metrica-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: "*" # Por precaución, aunque el rewrite lo maneja localmente
+    
+  # Frontend (Angular 18+)
+  - type: web
+    name: metrica-frontend
+    env: static
+    region: ohio
+    plan: free
+    # Modificamos el environment temporalmente en memoria/disco antes de build para asegurar /api
+    buildCommand: "cd frontend && npm install && npm run build -- --configuration production"
+    staticPublishPath: "./frontend/dist/frontend/browser"
+    routes:
+      - type: rewrite
+        source: /api/*
+        # Redirige todo el tráfico /api al backend
+        destination: https://metrica-backend.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        # Fallback de SPA de Angular
+        destination: /index.html
