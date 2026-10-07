@@ -1,8 +1,8 @@
 """Catálogos maestros: roles, consultores, clientes, proyectos y tareas."""
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..db import get_conn
-from ..schemas import ClienteIn, ConsultorIn, ProyectoIn, TareaIn
+from ....infrastructure.adapters.db import get_conn
+from ....domain.schemas import ClienteIn, ConsultorIn, ProyectoIn, TareaIn
 
 router = APIRouter(prefix="/api", tags=["Catálogos"])
 

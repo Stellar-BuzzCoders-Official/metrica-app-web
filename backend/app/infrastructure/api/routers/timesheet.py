@@ -3,21 +3,12 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..db import get_conn
-from ..schemas import LoteIdsIn, RegistroHorasIn
-
-from pydantic import BaseModel, Field
-from datetime import date
-from decimal import Decimal
+from ....infrastructure.adapters.db import get_conn
+from ....domain.schemas import LoteIdsIn, RegistroHorasIn, RegistroUIIn
+from ....application.use_cases.timesheet_service import TimesheetUseCase
+from ....infrastructure.adapters.timesheet_repo import PostgresTimesheetRepository
 
 router = APIRouter(prefix="/api/registros", tags=["Timesheets"])
-
-class RegistroUIIn(BaseModel):
-    consultor_id: int
-    proyecto_id: int
-    fecha_registro: date
-    horas_trabajadas: Decimal = Field(ge=Decimal("0.5"))
-    descripcion_actividad: str = Field(min_length=1)
 
 _SELECT_REGISTROS = """
     SELECT r.*, t.nombre_tarea, a.id_consultor, a.id_proyecto, a.tarifa_hora_pactada,
@@ -60,35 +51,13 @@ def listar_registros(
 
 @router.post("/ui", status_code=201)
 def registrar_horas_ui(body: RegistroUIIn, conn=Depends(get_conn)):
-    asig = conn.execute(
-        "SELECT id_asignacion FROM asignacion_proyecto WHERE id_consultor = %s AND id_proyecto = %s AND estado = 'VIGENTE'",
-        (body.consultor_id, body.proyecto_id)
-    ).fetchone()
-    if not asig:
-        raise HTTPException(400, "El consultor no tiene asignación vigente en este proyecto")
-    
-    tarea = conn.execute(
-        "SELECT id_tarea FROM tarea_entregable WHERE id_proyecto = %s LIMIT 1",
-        (body.proyecto_id,)
-    ).fetchone()
-    
-    if not tarea:
-        tarea_id = conn.execute(
-            "INSERT INTO tarea_entregable (id_proyecto, nombre_tarea, horas_estimadas, estado) VALUES (%s, 'Tarea General', 10, 'PENDIENTE') RETURNING id_tarea",
-            (body.proyecto_id,)
-        ).fetchone()["id_tarea"]
-    else:
-        tarea_id = tarea["id_tarea"]
-
-    registro = conn.execute(
-        """
-        INSERT INTO registro_horas (fecha_trabajo, horas_laboradas, descripcion_actividad, id_asignacion, id_tarea)
-        VALUES (%s, %s, %s, %s, %s)
-        RETURNING *
-        """,
-        (body.fecha_registro, body.horas_trabajadas, body.descripcion_actividad, asig["id_asignacion"], tarea_id)
-    ).fetchone()
-    return registro
+    repo = PostgresTimesheetRepository(conn)
+    use_case = TimesheetUseCase(repo)
+    try:
+        registro = use_case.registrar_horas(body)
+        return registro
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @router.post("", status_code=201)

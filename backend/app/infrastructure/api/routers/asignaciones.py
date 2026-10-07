@@ -1,8 +1,8 @@
 """Asignación de consultores a proyectos y auditoría (trigger trg_auditoria_asignacion)."""
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..db import get_conn
-from ..schemas import AsignacionIn, EstadoAsignacionIn, TarifaIn
+from ....infrastructure.adapters.db import get_conn
+from ....domain.schemas import AsignacionIn, EstadoAsignacionIn, TarifaIn
 
 router = APIRouter(prefix="/api", tags=["Asignaciones"])
 

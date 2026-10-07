@@ -1,7 +1,7 @@
 """Indicadores gerenciales (consultas de negocio 1 y 2 del documento)."""
 from fastapi import APIRouter, Depends
 
-from ..db import get_conn
+from ....infrastructure.adapters.db import get_conn
 
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 

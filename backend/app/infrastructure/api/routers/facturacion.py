@@ -3,8 +3,8 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..db import get_conn
-from ..schemas import EstadoPagoIn, GenerarFacturaIn
+from ....infrastructure.adapters.db import get_conn
+from ....domain.schemas import EstadoPagoIn, GenerarFacturaIn
 
 router = APIRouter(prefix="/api/facturas", tags=["Facturación"])
 
