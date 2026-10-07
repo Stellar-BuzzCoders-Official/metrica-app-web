@@ -22,7 +22,7 @@ services:
     routes:
       - type: rewrite
         source: /api/*
-        destination: https://metrica-backend.onrender.com/api/*
+        destination: https://metrica-backend-n1r3.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
