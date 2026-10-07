@@ -1,9 +1,9 @@
-services:
-  # Base de Datos PostgreSQL
-  - type: psql
-    name: metrica-db
+databases:
+  - name: metrica-db
     plan: free
+    region: ohio
 
+services:
   # Backend (FastAPI)
   - type: web
     name: metrica-backend
@@ -18,7 +18,7 @@ services:
           name: metrica-db
           property: connectionString
       - key: CORS_ORIGINS
-        value: "*" # Por precaución, aunque el rewrite lo maneja localmente
+        value: "*"
     
   # Frontend (Angular 18+)
   - type: web
@@ -26,15 +26,12 @@ services:
     env: static
     region: ohio
     plan: free
-    # Modificamos el environment temporalmente en memoria/disco antes de build para asegurar /api
     buildCommand: "cd frontend && npm install && npm run build -- --configuration production"
     staticPublishPath: "./frontend/dist/frontend/browser"
     routes:
       - type: rewrite
         source: /api/*
-        # Redirige todo el tráfico /api al backend
         destination: https://metrica-backend.onrender.com/api/*
       - type: rewrite
         source: /*
-        # Fallback de SPA de Angular
         destination: /index.html
