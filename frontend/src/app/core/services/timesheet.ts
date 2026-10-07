@@ -49,7 +49,6 @@ export class TimesheetService {
     this.loading.set(true);
     try {
       const data = await lastValueFrom(this.api.get<any[]>('/registros', { estado: 'PENDIENTE' }));
-      // Mock: solo mostrar los pendientes. idealmente el API filtraría por PM.
       this.pendientes.set(data);
     } catch (e: any) {
       this.toast.error('Error', e.message);

@@ -17,7 +17,6 @@ export class Timesheet implements OnInit {
   protected readonly cat = inject(CatalogoService);
   private readonly fb = inject(FormBuilder);
 
-  // ID del consultor mock (podría venir de la sesión en un sistema real, usamos 1 para el prototipo)
   readonly consultorId = 1;
 
   form = this.fb.nonNullable.group({

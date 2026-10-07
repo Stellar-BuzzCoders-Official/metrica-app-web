@@ -12,7 +12,6 @@ import { DatePipe } from '@angular/common';
 export class Aprobaciones implements OnInit {
   protected readonly ts = inject(TimesheetService);
   
-  // ID del Project Manager (mock para el prototipo)
   readonly pmId = 2;
 
   ngOnInit() {
