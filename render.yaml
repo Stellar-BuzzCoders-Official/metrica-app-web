@@ -24,7 +24,6 @@ services:
   - type: web
     name: metrica-frontend
     env: static
-    plan: free
     buildCommand: "cd frontend && npm install && npm run build -- --configuration production"
     staticPublishPath: "./frontend/dist/frontend/browser"
     routes:
