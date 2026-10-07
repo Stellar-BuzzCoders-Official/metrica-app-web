@@ -59,6 +59,11 @@ async def _pg(_: Request, exc: psycopg.Error):
     return JSONResponse(status_code=500, content={"detail": f"Error de base de datos: {_pg_message(exc)}"})
 
 
+@app.get("/", tags=["Sistema"])
+def root():
+    return {"message": "Métrica Andina API - Server is running!", "status": "ok"}
+
+
 @app.get("/api/health", tags=["Sistema"])
 def health(conn=Depends(get_conn)):
     row = conn.execute("SELECT version() AS version, current_user AS usuario, now() AS hora").fetchone()
